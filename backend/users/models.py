@@ -5,12 +5,10 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import validate_slug
 from django.db import models
 
-MODERATOR = 'moderator'
 ADMIN = 'admin'
 USER = 'user'
 
 ROLE_CHOICES = (
-    (MODERATOR, 'Модератор'),
     (ADMIN, 'Администратор'),
     (USER, 'Пользователь'),
 )
@@ -19,39 +17,17 @@ ROLE_CHOICES = (
 class User(AbstractUser):
     """Модель пользователя."""
 
-    username = models.CharField(
-        'Имя пользователя',
-        max_length=settings.USERNAME_MAX_LENGTH,
-        validators=(validate_slug,),
-        unique=True
-    )
-    email = models.EmailField(
-        'Эл.почта',
-        max_length=settings.EMAIL_MAX_LENGTH,
-        unique=True
-    )
-    role = models.CharField(
-        'Роль',
-        default=USER,
-        max_length=settings.USERNAME_MAX_LENGTH,
-        choices=ROLE_CHOICES,
-    )
-    bio = models.TextField(
-        'О себе',
-        blank=True,
-    )
-    first_name = models.CharField(
-        'Имя',
-        max_length=settings.USERNAME_MAX_LENGTH,
-        blank=True
-    )
-    last_name = models.CharField(
-        'Фамилия',
-        max_length=settings.USERNAME_MAX_LENGTH,
-        blank=True,
-    )
+    username = models.CharField('Имя пользователя', max_length=settings.USERNAME_MAX_LENGTH,
+                                validators=(validate_slug,), unique=True)
+    email = models.EmailField('Эл.почта', max_length=settings.EMAIL_MAX_LENGTH, unique=True)
+    role = models.CharField('Роль', default=USER, max_length=settings.USERNAME_MAX_LENGTH, choices=ROLE_CHOICES)
+    first_name = models.CharField('Имя', max_length=settings.USERNAME_MAX_LENGTH, blank=True)
+    last_name = models.CharField('Фамилия', max_length=settings.USERNAME_MAX_LENGTH, blank=True)
+    password = models.CharField("Пароль", null=False, max_length=128)
+    is_active = models.BooleanField("Активен", default=True)
 
     USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email', 'first_name', 'last_name', 'password']
 
     @property
     def is_user(self):
@@ -67,12 +43,6 @@ class User(AbstractUser):
                 or self.is_superuser
                 )
 
-    @property
-    def is_moderator(self):
-        """Проверка соответствия роли 'Модератор'."""
-
-        return self.role == MODERATOR
-
     class Meta:
         verbose_name = 'пользователь'
         verbose_name_plural = 'Пользователи'
@@ -84,3 +54,29 @@ class User(AbstractUser):
 
     def str(self):
         return self.username
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(
+        User,
+        related_name='subscriber',
+        verbose_name="Подписчик",
+        on_delete=models.CASCADE,
+    )
+    author = models.ForeignKey(
+        User,
+        related_name='subscribing',
+        verbose_name="Автор",
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'author'],
+                                    name='unique_subscription')
+        ]
+        verbose_name = 'подписка'
+        verbose_name_plural = 'Подписки'
+
+    def str(self):
+        return f'{self.user} подписан на {self.author}'
