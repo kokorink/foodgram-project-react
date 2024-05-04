@@ -1,6 +1,8 @@
+from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
-from users.models import User
+
+User = get_user_model()
 
 
 class Tag(models.Model):
@@ -43,7 +45,8 @@ class Recipe(models.Model):
     name = models.CharField('Рецепт', max_length=200, null=False)
     image = models.ImageField('Изображение', upload_to='collected_static/images/', null=False, default=None)
     text = models.TextField('Описание', null=False)
-    ingredients = models.ManyToManyField(Ingredient, related_name='recipe', verbose_name='Ингридиенты', null=False)
+    ingredients = models.ManyToManyField(Ingredient, through='RecipeIngridientList', related_name='recipe',
+                                         verbose_name='Ингридиенты', null=False)
     tags = models.ManyToManyField(Tag, related_name='recipe', verbose_name='Тэги', null=False)
     cooking_time = models.IntegerField('Время приготовления в минутах', null=False)
     pub_date = models.DateTimeField('Дата и время публикации', auto_now_add=True)
@@ -79,12 +82,14 @@ class RecipeTag(models.Model):
 
 
 class RecipeIngridientList(models.Model):
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, verbose_name="Ингридиент рецепта")
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, verbose_name="Ингридиент рецепта",
+                                   related_name="ingredient_in_recipes")
     amount = models.IntegerField('Количество',
                                  validators=[MinValueValidator(1, message='Минимум 1!')])
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='ingredient_list', verbose_name="Рецепт")
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, verbose_name="Рецепт")
 
     class Meta:
+        default_related_name = 'ingredient_recipe'
         verbose_name = 'ингридиент рецепта'
         verbose_name_plural = 'Ингридиенты рецепта'
         constraints = [
@@ -95,3 +100,48 @@ class RecipeIngridientList(models.Model):
 
     def __str__(self):
         return f'{self.ingredient.name} - {self.amount}{self.ingredient.measurement_unit}'
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(User,
+                             related_name='is_favorited',
+                             verbose_name='Пользователь',
+                             on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe,
+                               verbose_name='Рецепт',
+                               on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'в избранных'
+        verbose_name_plural = 'В избранных'
+        ordering = ('user',)
+        constraints = (
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_favorited_user_recipe'
+            ),
+        )
+
+
+class ShoppingCart(models.Model):
+    user = models.ForeignKey(User,
+                             related_name='is_in_shopping_cart',
+                             verbose_name='Пользователь',
+                             on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe,
+                               verbose_name='Рецепт',
+                               on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'в корзине'
+        verbose_name_plural = 'В корзине'
+        ordering = ('user',)
+        constraints = (
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_shopping_cart_user_recipe'
+            ),
+        )
+
+    def __str__(self):
+        return f'{self.user} - {self.recipe}'

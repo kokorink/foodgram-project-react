@@ -2,7 +2,7 @@
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import validate_slug
+from django.core.validators import validate_slug, RegexValidator
 from django.db import models
 
 ADMIN = 'admin'
@@ -17,17 +17,27 @@ ROLE_CHOICES = (
 class User(AbstractUser):
     """Модель пользователя."""
 
-    username = models.CharField('Имя пользователя', max_length=settings.USERNAME_MAX_LENGTH,
-                                validators=(validate_slug,), unique=True)
+    username_regex = RegexValidator(
+        regex=r'^[\w.@+-]+\Z',
+        message='Некорректное имя пользоватея'
+    )
+    username = models.CharField(
+        validators=(username_regex,),
+        verbose_name='Логин пользователя',
+        max_length=150,
+        unique=True,
+        blank=False,
+        null=False
+    )
     email = models.EmailField('Эл.почта', max_length=settings.EMAIL_MAX_LENGTH, unique=True)
     role = models.CharField('Роль', default=USER, max_length=settings.USERNAME_MAX_LENGTH, choices=ROLE_CHOICES)
-    first_name = models.CharField('Имя', max_length=settings.USERNAME_MAX_LENGTH, blank=True)
-    last_name = models.CharField('Фамилия', max_length=settings.USERNAME_MAX_LENGTH, blank=True)
+    first_name = models.CharField('Имя', max_length=settings.USERNAME_MAX_LENGTH, blank=True, null=False,)
+    last_name = models.CharField('Фамилия', max_length=150, blank=False)
     password = models.CharField("Пароль", null=False, max_length=128)
     is_active = models.BooleanField("Активен", default=True)
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email', 'first_name', 'last_name', 'password']
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'password']
 
     @property
     def is_user(self):

@@ -107,28 +107,29 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-    ],
 
-    'DEFAULT_AUTHENTICATION_CLASSES': [
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-    ],
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 6,
 }
 
 DJOSER = {
-    'SERIALIZERS': {
-        'user_create': 'api.serializers.CustomUserCreateSerializer',
-        'user': 'api.serializers.CustomUserSerializer',
-        'current_user': 'api.serializers.CustomUserSerializer',
-    },
-
+    'HIDE_USERS': False,
     'PERMISSIONS': {
-        'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
+        'user': ['djoser.permissions.CurrentUserOrAdmin'],
         'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
     },
-    'HIDE_USERS': False,
+    'SERIALIZERS': {
+        'user': 'users.serializers.UserGetSerializer',
+        'current_user': 'users.serializers.UserGetSerializer',
+        'user_create': 'users.serializers.UserCreateSerializer',
+    },
 }
 
 # Internationalization
@@ -163,4 +164,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 USERNAME_MAX_LENGTH = 10
 EMAIL_MAX_LENGTH = 256
-
