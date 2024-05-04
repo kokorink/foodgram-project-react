@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import validate_slug, RegexValidator
 from django.db import models
+from rest_framework.exceptions import ValidationError
 
 ADMIN = 'admin'
 USER = 'user'
@@ -31,7 +32,7 @@ class User(AbstractUser):
     )
     email = models.EmailField('Эл.почта', max_length=settings.EMAIL_MAX_LENGTH, unique=True)
     role = models.CharField('Роль', default=USER, max_length=settings.USERNAME_MAX_LENGTH, choices=ROLE_CHOICES)
-    first_name = models.CharField('Имя', max_length=settings.USERNAME_MAX_LENGTH, blank=True, null=False,)
+    first_name = models.CharField('Имя', max_length=settings.USERNAME_MAX_LENGTH, blank=False, null=False, )
     last_name = models.CharField('Фамилия', max_length=150, blank=False)
     password = models.CharField("Пароль", null=False, max_length=128)
     is_active = models.BooleanField("Активен", default=True)
@@ -75,10 +76,18 @@ class Subscription(models.Model):
     )
     author = models.ForeignKey(
         User,
-        related_name='subscribing',
+        related_name='subscribe_author',
         verbose_name="Автор",
         on_delete=models.CASCADE,
     )
+
+    def clean(self):
+        if self.user == self.author:
+            raise ValidationError("Нельзя подписаться на самого себя")
+
+    def save(self, *args, **kwargs):
+        self.clean()  # Выполняем проверку перед сохранением
+        super().save(*args, **kwargs)
 
     class Meta:
         constraints = [

@@ -1,10 +1,12 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import permissions, status, viewsets
+from rest_framework import permissions, status, viewsets, mixins
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from .filters import IngredientFilter
 from .pagination import PageNumberPagination
 from .permissinos import IsAuthorOrReadOnly
 from .renders import TXTShoppingCartDataRenderer
@@ -14,16 +16,18 @@ from .serializers import (RecipeIngridientListSerializer, IngredientSerializer,
 from .models import Favorite, Ingredient, RecipeIngridientList, Recipe, ShoppingCart, Tag
 
 
-class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = IngredientSerializer
-    pagination_class = None
+class ListRetrieveViewSet(mixins.ListModelMixin,
+                          mixins.RetrieveModelMixin,
+                          viewsets.GenericViewSet, ):
+    pass
 
-    def get_queryset(self):
-        name = self.request.query_params.get('name')
-        querset = Ingredient.objects.all()
-        if name:
-            return querset.filter(name__istartswith=name)  # icontains
-        return querset
+class IngredientViewSet(ListRetrieveViewSet):
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    permission_classes = (AllowAny,)
+    filter_backends = (IngredientFilter,)
+    search_fields = ('^name',)
+    pagination_class = None
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):

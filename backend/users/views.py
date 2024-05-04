@@ -1,3 +1,4 @@
+from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import pagination, permissions, status
@@ -31,7 +32,10 @@ class UserViewSet(UserViewSet):
     def subscribe(self, request, id):
         user = request.user
         subscriber = get_object_or_404(User, pk=id)
-        subscription = user.user_subscriptions.filter(subscriber=subscriber)
+        subscription = user.subscribe_author.filter(user=subscriber)
+
+        if user != subscriber:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if (request.method == 'POST' and user != subscriber
            and not subscription.exists()):
