@@ -1,4 +1,3 @@
-from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import pagination, permissions, status
@@ -20,7 +19,7 @@ class UserViewSet(UserViewSet):
 
     @action(detail=False,)
     def subscriptions(self, request):
-        subscribers = User.objects.filter(subscriber__user=request.user)
+        subscribers = User.objects.filter(email=request.user)
         page = self.paginate_queryset(subscribers)
         serializer = SubscriptionsSerializer(
             page,
@@ -28,18 +27,16 @@ class UserViewSet(UserViewSet):
             context={'request': request})
         return self.get_paginated_response(serializer.data)
 
+
     @action(methods=['post', 'delete'], detail=True)
     def subscribe(self, request, id):
         user = request.user
         subscriber = get_object_or_404(User, pk=id)
         subscription = user.subscribe_author.filter(user=subscriber)
 
-        if user != subscriber:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
         if (request.method == 'POST' and user != subscriber
            and not subscription.exists()):
-            Subscription.objects.create(user=user, subscriber=subscriber)
+            Subscription.objects.create(author=user, user=subscriber)
             serializer = SubscriptionsSerializer(subscriber,
                                                  context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)

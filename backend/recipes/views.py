@@ -60,7 +60,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if is_in_shopping_cart and user.is_authenticated:
             return queryset.filter(shoppingcart__user=user)
         if is_favorited and user.is_authenticated:
-            return queryset.filter(favorited__user=user)
+            return queryset.filter(favorite__user=user)
         return queryset
 
     def perform_create(self, serializer):
