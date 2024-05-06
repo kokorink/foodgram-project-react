@@ -1,3 +1,5 @@
+"""Описание моделей для рецепта"""
+
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -6,6 +8,8 @@ User = get_user_model()
 
 
 class Tag(models.Model):
+    """Модель тега."""
+
     name = models.CharField('Тэг', max_length=200, unique=True, null=False)
     color = models.CharField('Цвет', max_length=7, unique=True, null=False)
     slug = models.SlugField('Слаг', max_length=200, unique=True, null=False)
@@ -20,10 +24,12 @@ class Tag(models.Model):
             )]
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class Ingredient(models.Model):
+    """Модель ингридиента."""
+
     name = models.CharField('Ингридиент', max_length=200, null=False)
     measurement_unit = models.TextField('Единица измерения', null=False)
 
@@ -37,12 +43,14 @@ class Ingredient(models.Model):
             )]
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class Recipe(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор',
-                               null=False, related_name="recipes",)
+    """Модель рецепта."""
+
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор', null=False,
+                               related_name="recipes",)
     name = models.CharField('Рецепт', max_length=200, null=False)
     image = models.ImageField('Изображение', upload_to='collected_static/images/', null=False, default=None)
     text = models.TextField('Описание', null=False)
@@ -62,10 +70,12 @@ class Recipe(models.Model):
             )]
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class RecipeTag(models.Model):
+    """Модель связки теэгов и рецепта."""
+
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE, verbose_name="Тэг рецепта")
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, verbose_name="Рецепт тэга")
 
@@ -83,6 +93,8 @@ class RecipeTag(models.Model):
 
 
 class RecipeIngridientList(models.Model):
+    """Модель связки ингридиентов с их количеством и рецептом."""
+
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, verbose_name="Ингридиент рецепта",
                                    related_name="ingredient_in_recipes")
     amount = models.IntegerField('Количество',
@@ -104,16 +116,13 @@ class RecipeIngridientList(models.Model):
 
 
 class Favorite(models.Model):
-    user = models.ForeignKey(User,
-                             related_name='is_favorited',
-                             verbose_name='Пользователь',
-                             on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe,
-                               verbose_name='Рецепт',
-                               on_delete=models.CASCADE)
+    """Модель для добавления рецепта в избранное."""
+
+    user = models.ForeignKey(User, related_name='is_favorited', on_delete=models.CASCADE, verbose_name='Пользователь')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, verbose_name='Рецепт')
 
     class Meta:
-        verbose_name = 'в избранных'
+        verbose_name = 'в избранном'
         verbose_name_plural = 'В избранных'
         ordering = ('user',)
         constraints = (
@@ -125,13 +134,11 @@ class Favorite(models.Model):
 
 
 class ShoppingCart(models.Model):
-    user = models.ForeignKey(User,
-                             related_name='is_in_shopping_cart',
-                             verbose_name='Пользователь',
-                             on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe,
-                               verbose_name='Рецепт',
-                               on_delete=models.CASCADE)
+    """Модель списка покупок."""
+
+    user = models.ForeignKey(User, related_name='is_in_shopping_cart', on_delete=models.CASCADE,
+                             verbose_name='Пользователь')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, verbose_name='Рецепт')
 
     class Meta:
         verbose_name = 'в корзине'

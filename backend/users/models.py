@@ -2,7 +2,7 @@
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import validate_slug, RegexValidator
+from django.core.validators import RegexValidator
 from django.db import models
 from rest_framework.exceptions import ValidationError
 
@@ -54,25 +54,21 @@ class User(AbstractUser):
 
 
 class Subscription(models.Model):
-    user = models.ForeignKey(
-        User,
-        related_name='subscriber',
-        verbose_name="Подписчик",
-        on_delete=models.CASCADE,
-    )
-    author = models.ForeignKey(
-        User,
-        related_name='subscribe_author',
-        verbose_name="Автор",
-        on_delete=models.CASCADE,
-    )
+    """Модель для реализации подписки на пользователя."""
+
+    user = models.ForeignKey(User, related_name='subscriber', on_delete=models.CASCADE, verbose_name="Подписчик")
+    author = models.ForeignKey(User, on_delete=models.CASCADE,verbose_name="Автор")
 
     def clean(self):
+        """Проверка подписки на самого себя."""
+
         if self.user == self.author:
             raise ValidationError("Нельзя подписаться на самого себя")
 
     def save(self, *args, **kwargs):
-        self.clean()  # Выполняем проверку перед сохранением
+        """Переопределение сохранения с учётом проверки."""
+
+        self.clean()
         super().save(*args, **kwargs)
 
     class Meta:

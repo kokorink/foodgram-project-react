@@ -1,0 +1,19 @@
+[MASTER]
+# Список расширений файлов, которые будут анализироваться pylint
+ignore=migrations, .pylintrc, db.sqlite3, requirements.txt, manage.py, apps.py
+
+[MESSAGES CONTROL]
+# Игнорировать определенные предупреждения или ошибки
+disable=too-few-public-methods, no-member, too-many-ancestors
+
+[BASIC]
+# Количество пробелов, используемых для отступов (рекомендуется 4 пробела)
+indent-string = '    '
+
+[FORMAT]
+# Отключить проверку максимальной длины строки (рекомендуется, если вы используете black)
+max-line-length = 120
+
+[TYPECHECK]
+# Включить или отключить проверку типов
+enable=annotations

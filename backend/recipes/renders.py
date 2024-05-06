@@ -1,30 +1,33 @@
+"""Рендеринг данных."""
+
 import io
 
 from rest_framework import renderers
 
 
-class TXTShoppingCartDataRenderer(renderers.BaseRenderer):
+class TXTShoppingCartExport(renderers.BaseRenderer):
+    """Рендеринг списка покупок в текстовый формат."""
 
     media_type = "text/plain"
     format = "txt"
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         if isinstance(data, list):
-            text_buffer = io.StringIO()
+            txt = io.StringIO()
 
-            verdicts = {}
+            shopping_cart = {}
             for ingredient in data:
-                name = (f'{ingredient["name"]} '
-                        f'({ingredient["measurement_unit"]})')
-                amount = ingredient['amount']
-                if name in verdicts:
-                    verdicts[name] += amount
+                name = ingredient["name"]
+                measurement_unit = ingredient["measurement_unit"]
+                amount = ingredient["amount"]
+                if name in shopping_cart:
+                    shopping_cart[name][0] += amount
                 else:
-                    verdicts[name] = amount
+                    shopping_cart[name] = [amount, measurement_unit]
 
-            text_buffer.write(
-                ''.join(f'• {name} — {amount}\n'
-                        for name, amount in verdicts.items())
+            txt.write(
+                ''.join(f'— {name}: {amount_unit[0]} ({amount_unit[1]})\n'
+                        for name, amount_unit in shopping_cart.items())
             )
 
-            return text_buffer.getvalue()
+            return txt.getvalue()

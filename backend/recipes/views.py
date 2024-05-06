@@ -1,25 +1,27 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import permissions, status, viewsets, mixins
+from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from .filters import IngredientFilter
+from .models import (Favorite, Ingredient, Recipe, RecipeIngridientList,
+                     ShoppingCart, Tag)
 from .pagination import PageNumberPagination
 from .permissinos import IsAuthorOrReadOnly
-from .renders import TXTShoppingCartDataRenderer
-from .serializers import (RecipeIngridientListSerializer, IngredientSerializer,
-                          RecipeCreateSerializer, RecipeGetSerializer,
+from .renders import TXTShoppingCartExport
+from .serializers import (IngredientSerializer, RecipeCreateSerializer,
+                          RecipeGetSerializer, RecipeIngridientListSerializer,
                           RecipeShortSerializer, TagSerializer)
-from .models import Favorite, Ingredient, RecipeIngridientList, Recipe, ShoppingCart, Tag
 
 
 class ListRetrieveViewSet(mixins.ListModelMixin,
                           mixins.RetrieveModelMixin,
                           viewsets.GenericViewSet, ):
     pass
+
 
 class IngredientViewSet(ListRetrieveViewSet):
     queryset = Ingredient.objects.all()
@@ -116,7 +118,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=False,
             permission_classes=(permissions.IsAuthenticated,),
-            renderer_classes=(TXTShoppingCartDataRenderer,))
+            renderer_classes=(TXTShoppingCartExport,))
     def download_shopping_cart(self, request):
         user = request.user
         ingredient = RecipeIngridientList.objects.filter(

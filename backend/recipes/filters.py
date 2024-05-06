@@ -1,3 +1,4 @@
+"""Описание фильтров для приложения recipes."""
 from django_filters.rest_framework import FilterSet, filters
 from rest_framework.filters import SearchFilter
 
@@ -5,22 +6,27 @@ from recipes.models import Recipe
 
 
 class RecipeFilter(FilterSet):
+    """Фильтры модели Recipe."""
+
     author = filters.AllValuesFilter(field_name='author')
     tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
     is_favorited = filters.BooleanFilter(method='get_is_favorited')
-    is_in_shopping_cart = filters.BooleanFilter(
-        method='get_is_in_shopping_cart')
+    is_in_shopping_cart = filters.BooleanFilter(method='get_is_in_shopping_cart')
 
     class Meta:
         model = Recipe
         fields = ('author', 'tags', 'is_favorited', 'is_in_shopping_cart', )
 
-    def get_is_favorited(self, queryset, name, data):
+    def get_is_favorited(self, queryset, data):
+        """Проверка признака наличия рецепта в избранном."""
+
         if data and not self.request.user.is_anonymous:
             return queryset.filter(in_favorites_by=self.request.user)
         return queryset
 
-    def get_is_in_shopping_cart(self, queryset, name, data):
+    def get_is_in_shopping_cart(self, queryset, data):
+        """Проверка признака наличия ингридиента в корзине."""
+
         if data and not self.request.user.is_anonymous:
             return queryset.filter(
                 in_shopping_cart_by=self.request.user)
@@ -28,4 +34,6 @@ class RecipeFilter(FilterSet):
 
 
 class IngredientFilter(SearchFilter):
+    """Фильтры модели Ingredient."""
+
     search_param = 'name'

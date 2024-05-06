@@ -1,10 +1,11 @@
+"""Описание админ-зоны для моделей приложения recipes."""
 from django.contrib import admin
 
-from .models import Recipe, Ingredient, Tag, RecipeIngridientList
+from .models import Ingredient, Recipe, RecipeIngridientList, Tag
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    """Представление модели User."""
+    """Представление модели рецепта."""
 
     list_display = ('id',
                     'author',
@@ -22,25 +23,29 @@ class RecipeAdmin(admin.ModelAdmin):
 
 
 class IngredientAdmin(admin.ModelAdmin):
+    """Представление модели ингридиентов."""
 
     list_display = ('name', 'measurement_unit')
-    ordering = 'name',
+    ordering = ('name',)
     search_fields = ('name', 'author')
     list_display_links = ('name',)
 
 
 class TagAdmin(admin.ModelAdmin):
+    """Представление модели тэгов."""
 
     list_display = ('name', 'color', 'slug')
-    ordering = 'name',
+    ordering = ('name',)
     search_fields = ('name',)
     list_display_links = ('name',)
 
 
 class RecipeIngridientListAdmin(admin.ModelAdmin):
+    """Представление связки моделей рецептов и ингридиентов."""
+
     list_display = ('ingredient', 'amount', 'recipe')
     list_display_links = ('ingredient',)
-    ordering = 'recipe',
+    ordering = ('recipe',)
 
 
 admin.site.register(Recipe, RecipeAdmin)

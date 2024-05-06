@@ -12,15 +12,17 @@ class Command(BaseCommand):
             'data/ingredients.json, располагающейся в корне проекта. Формат принимаемых данных: '
             '{"ingridients": [{"name": "data_name", "measurement_unit": "data_measurement_unit"}, ]}')
 
-    def handle(self, *args, **kwargs):
+    def handle(self):
         """Вызов собственных методов класса."""
+
         self.load_ingredients()
         self.create_tags()
         self.stdout.write(self.style.SUCCESS('Данные успешно загружены!'))
 
     @staticmethod
     def load_ingredients():
-        """Метод для загрузки """
+        """Загрузка ингридиентов из ingredients.json."""
+
         if not Ingredient.objects.all().exists():
             path = BASE_DIR.joinpath('data', 'ingredients.json')
             with open(path, 'r', encoding='utf8') as file:
@@ -35,6 +37,8 @@ class Command(BaseCommand):
 
     @staticmethod
     def create_tags():
+        """Загрузка тэгов."""
+
         if not Tag.objects.all().exists():
             breakfast_tag = Tag(name='Завтрак', color='#000000', slug='breakfast')
             brunch_tag = Tag(name='Бранч', color='#FF0000', slug='brunch')

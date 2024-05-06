@@ -1,6 +1,8 @@
+"""Описание модели пользователя и подписок для админ-зоны."""
+
 from django.contrib import admin
 
-from .models import User, Subscription
+from .models import Subscription, User
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -19,9 +21,10 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class SubscriptionAdmin(admin.ModelAdmin):
+    """Представление модели для подписок."""
 
     list_display = ('user', 'author')
-    ordering = 'user',
+    ordering = ('user',)
     search_fields = ('user', 'author')
     list_display_links = ('user',)
 

@@ -5,7 +5,8 @@ from django.core.files.base import ContentFile
 from rest_framework import serializers
 
 from users.serializers import UserGetSerializer
-from .models import Ingredient, RecipeIngridientList, Recipe, Tag
+
+from .models import Ingredient, Recipe, RecipeIngridientList, Tag
 
 User = get_user_model()
 
