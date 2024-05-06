@@ -15,7 +15,6 @@ class Base64ImageField(serializers.ImageField):
         if isinstance(data, str) and data.startswith('data:image'):
             format, imgstr = data.split(';base64,')
             ext = format.split('/')[-1]
-
             data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
 
         return super().to_internal_value(data)
@@ -50,10 +49,10 @@ class TagSerializer(serializers.ModelSerializer):
 
 class RecipeGetSerializer(serializers.ModelSerializer):
     tags = TagSerializer(read_only=True, many=True)
-    author = UserGetSerializer(read_only=True,)
+    author = UserGetSerializer(read_only=True, )
     ingredients = RecipeIngridientListSerializer(read_only=True,
-                                             many=True,
-                                             source='ingredient_recipe')
+                                                 many=True,
+                                                 source='ingredient_recipe')
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
@@ -103,7 +102,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                   'text', 'cooking_time')
         read_only_fields = ('author',)
 
-    def validate_tags(self, value):
+    @staticmethod
+    def validate_tags(value):
         if not value:
             raise serializers.ValidationError('Отсутствуют теги')
         if len(value) != len(set(value)):
@@ -112,7 +112,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             )
         return value
 
-    def validate_ingredients(self, value):
+    @staticmethod
+    def validate_ingredients(value):
         if not value:
             raise serializers.ValidationError('Отсутствуют ингредиенты')
         ingredient_list = set()
@@ -127,7 +128,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             ingredient_list.add(ingredient_id)
         return value
 
-    def create_update_ingredients_amount(self, ingredient_recipe, recipe):
+    @staticmethod
+    def create_update_ingredients_amount(ingredient_recipe, recipe):
         ingrediens_amount = []
         for ingredient in ingredient_recipe:
             ingredient_id = ingredient['ingredient']['id']
@@ -219,5 +221,6 @@ class SubscriptionsSerializer(UserGetSerializer):
             recipes = recipes[:int(limit)]
         return RecipeShortSerializer(recipes, many=True).data
 
-    def get_recipes_count(self, obj):
+    @staticmethod
+    def get_recipes_count(obj):
         return obj.recipes.all().count()
