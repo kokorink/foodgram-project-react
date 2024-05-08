@@ -34,12 +34,12 @@ class UserViewSet(UserViewSet):
         return self.get_paginated_response(serializer.data)
 
     @action(methods=['post', 'delete'], detail=True)
-    def subscribe(self, request, user_id):
+    def subscribe(self, request, id):
         """Добавление и удаление подписки."""
 
         user = request.user
-        subscriber = get_object_or_404(User, pk=user_id)
-        subscription = user.subscribe_author.filter(user=subscriber)
+        subscriber = get_object_or_404(User, pk=id)
+        subscription = user.subscriber.filter(user=subscriber)
 
         if (request.method == 'POST' and user != subscriber
                 and not subscription.exists()):

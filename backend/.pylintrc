@@ -1,19 +1,30 @@
 [MASTER]
-# Список расширений файлов, которые будут анализироваться pylint
-ignore=migrations, .pylintrc, db.sqlite3, requirements.txt, manage.py, apps.py
+ignore=
+    migrations,
+    .pylintrc,
+    db.sqlite3,
+    requirements.txt,
+    manage.py,
+    apps.py
 
 [MESSAGES CONTROL]
-# Игнорировать определенные предупреждения или ошибки
-disable=too-few-public-methods, no-member, too-many-ancestors
+disable=
+    too-few-public-methods,
+    no-member,
+    too-many-ancestors
 
 [BASIC]
-# Количество пробелов, используемых для отступов (рекомендуется 4 пробела)
 indent-string = '    '
+variable-naming-style=snake_case
+variable-rgx=[a-z_][a-z0-9_]{2,30}$
+function-naming-style=snake_case
+function-rgx=[a-z_][a-z0-9_]{2,30}$
+const-naming-style=UPPER_CASE
+const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
 
 [FORMAT]
-# Отключить проверку максимальной длины строки (рекомендуется, если вы используете black)
 max-line-length = 120
+max-module-lines = 1000
 
 [TYPECHECK]
-# Включить или отключить проверку типов
-enable=annotations
+ignored-classes = Meta,

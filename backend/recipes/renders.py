@@ -4,8 +4,11 @@ import io
 
 from rest_framework import renderers
 
+AMOUNT_INDEX = 0
+MEASUREMENT_UNIT_INDEX = 1
 
-class TXTShoppingCartExport(renderers.BaseRenderer):
+
+class ShoppingCartToTXTExport(renderers.BaseRenderer):
     """Рендеринг списка покупок в текстовый формат."""
 
     media_type = "text/plain"
@@ -21,12 +24,12 @@ class TXTShoppingCartExport(renderers.BaseRenderer):
                 measurement_unit = ingredient["measurement_unit"]
                 amount = ingredient["amount"]
                 if name in shopping_cart:
-                    shopping_cart[name][0] += amount
+                    shopping_cart[name][AMOUNT_INDEX] += amount
                 else:
                     shopping_cart[name] = [amount, measurement_unit]
 
             txt.write(
-                ''.join(f'— {name}: {amount_unit[0]} ({amount_unit[1]})\n'
+                ''.join(f'— {name}: {amount_unit[AMOUNT_INDEX]} ({amount_unit[MEASUREMENT_UNIT_INDEX]})\n'
                         for name, amount_unit in shopping_cart.items())
             )
 

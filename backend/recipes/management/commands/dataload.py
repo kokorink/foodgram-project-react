@@ -12,7 +12,7 @@ class Command(BaseCommand):
             'data/ingredients.json, располагающейся в корне проекта. Формат принимаемых данных: '
             '{"ingridients": [{"name": "data_name", "measurement_unit": "data_measurement_unit"}, ]}')
 
-    def handle(self):
+    def handle(self, *args, **options):
         """Вызов собственных методов класса."""
 
         self.load_ingredients()
@@ -37,7 +37,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def create_tags():
-        """Загрузка тэгов."""
+        """Добавление тэгов."""
 
         if not Tag.objects.all().exists():
             breakfast_tag = Tag(name='Завтрак', color='#000000', slug='breakfast')
