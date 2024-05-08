@@ -18,18 +18,9 @@ ROLE_CHOICES = (
 class User(AbstractUser):
     """Модель пользователя."""
 
-    username_regex = RegexValidator(
-        regex=r'^[\w.@+-]+\Z',
-        message='Некорректное имя пользоватея'
-    )
-    username = models.CharField(
-        validators=(username_regex,),
-        verbose_name='Логин пользователя',
-        max_length=150,
-        unique=True,
-        blank=False,
-        null=False
-    )
+    username_regex = RegexValidator(regex=r'^[\w.@+-]+\Z', message='Некорректное имя пользоватея')
+    username = models.CharField(validators=(username_regex,), verbose_name='Логин пользователя', max_length=150,
+                                unique=True, blank=False, null=False)
     email = models.EmailField('Эл.почта', max_length=settings.EMAIL_MAX_LENGTH, unique=True)
     role = models.CharField('Роль', default=USER, max_length=settings.USERNAME_MAX_LENGTH, choices=ROLE_CHOICES)
     first_name = models.CharField('Имя', max_length=settings.USERNAME_MAX_LENGTH, blank=False, null=False, )
@@ -43,36 +34,28 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'пользователь'
         verbose_name_plural = 'Пользователи'
-        constraints = [
-            models.UniqueConstraint(
-                fields=('email', 'username'),
-                name='unique_user'
-            )]
+        constraints = [models.UniqueConstraint(fields=('email', 'username'), name='unique_user')]
 
     def str(self):
         return self.username
 
 
 class Subscription(models.Model):
-    user = models.ForeignKey(
-        User,
-        related_name='subscriber',
-        verbose_name="Подписчик",
-        on_delete=models.CASCADE,
-    )
-    author = models.ForeignKey(
-        User,
-        related_name='subscribe_author',
-        verbose_name="Автор",
-        on_delete=models.CASCADE,
-    )
+    """Модель для подписок."""
+
+    user = models.ForeignKey(User, related_name='subscriber', verbose_name="Подписчик", on_delete=models.CASCADE,)
+    author = models.ForeignKey(User, related_name='subscribe_author', verbose_name="Автор", on_delete=models.CASCADE,)
 
     def clean(self):
+        """Проверка на самоподписку."""
+
         if self.user == self.author:
             raise ValidationError("Нельзя подписаться на самого себя")
 
     def save(self, *args, **kwargs):
-        self.clean()  # Выполняем проверку перед сохранением
+        """Переопределение сохранения с учётом проверки."""
+
+        self.clean()
         super().save(*args, **kwargs)
 
     class Meta:
