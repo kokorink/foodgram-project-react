@@ -40,20 +40,6 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'password']
 
-    # @property
-    # def is_user(self):
-    #     """Проверка соответствия роли 'Пользователь'."""
-    #
-    #     return self.role == USER
-    #
-    # @property
-    # def is_admin(self):
-    #     """Проверка соответствия роли 'Администратор'."""
-    #
-    #     return (self.role == ADMIN
-    #             or self.is_superuser
-    #             )
-
     class Meta:
         verbose_name = 'пользователь'
         verbose_name_plural = 'Пользователи'
