@@ -1,0 +1,30 @@
+[MASTER]
+ignore=
+    migrations,
+    .pylintrc,
+    db.sqlite3,
+    requirements.txt,
+    manage.py,
+    apps.py
+
+[MESSAGES CONTROL]
+disable=
+    too-few-public-methods,
+    no-member,
+    too-many-ancestors
+
+[BASIC]
+indent-string = '    '
+variable-naming-style=snake_case
+variable-rgx=[a-z_][a-z0-9_]{2,30}$
+function-naming-style=snake_case
+function-rgx=[a-z_][a-z0-9_]{2,30}$
+const-naming-style=UPPER_CASE
+const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
+
+[FORMAT]
+max-line-length = 120
+max-module-lines = 1000
+
+[TYPECHECK]
+ignored-classes = Meta,

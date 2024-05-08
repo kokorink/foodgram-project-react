@@ -1,7 +1,10 @@
+"""Описание ограничений."""
+
 from rest_framework import permissions
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
+    """Ограничения на чтение для не автора."""
 
     def has_permission(self, request, view):
         return (
