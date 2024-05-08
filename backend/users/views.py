@@ -39,12 +39,12 @@ class UserViewSet(UserViewSet):
 
         user = request.user
         subscriber = get_object_or_404(User, pk=id)
-        subscription = user.subscriber.filter(user=subscriber)
+        subscription = user.subscribe_author.filter(user=subscriber)
 
-        if (request.method == 'POST' and user != subscriber
-                and not subscription.exists()):
+        if request.method == 'POST' and user != subscriber and not subscription.exists():
             Subscription.objects.create(author=user, user=subscriber)
-            serializer = SubscriptionsSerializer(subscriber, context={'request': request})
+            serializer = SubscriptionsSerializer(subscriber,
+                                                 context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == 'DELETE' and subscription:

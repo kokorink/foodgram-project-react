@@ -2,7 +2,7 @@
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
+from django.core.validators import validate_slug, RegexValidator
 from django.db import models
 from rest_framework.exceptions import ValidationError
 
@@ -40,6 +40,20 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'password']
 
+    # @property
+    # def is_user(self):
+    #     """Проверка соответствия роли 'Пользователь'."""
+    #
+    #     return self.role == USER
+    #
+    # @property
+    # def is_admin(self):
+    #     """Проверка соответствия роли 'Администратор'."""
+    #
+    #     return (self.role == ADMIN
+    #             or self.is_superuser
+    #             )
+
     class Meta:
         verbose_name = 'пользователь'
         verbose_name_plural = 'Пользователи'
@@ -54,21 +68,25 @@ class User(AbstractUser):
 
 
 class Subscription(models.Model):
-    """Модель для реализации подписки на пользователя."""
-
-    user = models.ForeignKey(User, related_name='subscriber', on_delete=models.CASCADE, verbose_name="Подписчик")
-    author = models.ForeignKey(User, on_delete=models.CASCADE,verbose_name="Автор")
+    user = models.ForeignKey(
+        User,
+        related_name='subscriber',
+        verbose_name="Подписчик",
+        on_delete=models.CASCADE,
+    )
+    author = models.ForeignKey(
+        User,
+        related_name='subscribe_author',
+        verbose_name="Автор",
+        on_delete=models.CASCADE,
+    )
 
     def clean(self):
-        """Проверка подписки на самого себя."""
-
         if self.user == self.author:
             raise ValidationError("Нельзя подписаться на самого себя")
 
     def save(self, *args, **kwargs):
-        """Переопределение сохранения с учётом проверки."""
-
-        self.clean()
+        self.clean()  # Выполняем проверку перед сохранением
         super().save(*args, **kwargs)
 
     class Meta:
