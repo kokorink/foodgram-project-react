@@ -123,9 +123,7 @@ class RecipeViewSet(ModelViewSet):
 
     @action(methods=['post', 'delete'],
             detail=True,
-            permission_classes=(
-                    IsAuthenticated,
-            )
+            permission_classes=(IsAuthenticated,)
             )
     def favorite(self, request, pk):
         """Добавление/удаление рецепта в избранное."""
@@ -192,8 +190,10 @@ class RecipeViewSet(ModelViewSet):
             recipe__shoppingcart__user=user)
         if ingredient:
             now = timezone.now()
-            file_name = (f'Shopping_list_{now:%Y-%m-%d_%H-%M-%S}'
-                         f'.{request.accepted_renderer.format}')
+            file_name = (
+                f'Shopping_list_{now:%Y-%m-%d_%H-%M-%S}'
+                f'.{request.accepted_renderer.format}'
+            )
             serializer = IngridientWithAmountSerializer(
                 ingredient,
                 many=True
@@ -201,7 +201,7 @@ class RecipeViewSet(ModelViewSet):
             return Response(
                 serializer.data,
                 headers={
-                'Content-Disposition':
+                    'Content-Disposition':
                     f"attachment; filename='{file_name}'"
                 }
             )
