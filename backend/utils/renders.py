@@ -29,7 +29,8 @@ class ShoppingCartToTXTExport(renderers.BaseRenderer):
                     shopping_cart[name] = [amount, measurement_unit]
 
             txt.write(
-                ''.join(f'— {name}: {amount_unit[AMOUNT_INDEX]} ({amount_unit[MEASUREMENT_UNIT_INDEX]})\n'
+                ''.join(f'— {name}: {amount_unit[AMOUNT_INDEX]} '
+                        f'({amount_unit[MEASUREMENT_UNIT_INDEX]})\n'
                         for name, amount_unit in shopping_cart.items())
             )
 

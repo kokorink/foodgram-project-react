@@ -23,8 +23,8 @@ const-naming-style=UPPER_CASE
 const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
 
 [FORMAT]
-max-line-length = 120
-max-module-lines = 1000
+max-line-length = 80
+max-module-lines = 500
 
 [TYPECHECK]
 ignored-classes = Meta,

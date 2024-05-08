@@ -4,24 +4,36 @@ from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+)
 from rest_framework.response import Response
-from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
-                                   HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST)
+from rest_framework.status import (
+    HTTP_200_OK, HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT,
+    HTTP_400_BAD_REQUEST,
+)
 
 from recipes.serializers import SubscriptionsSerializer
 
-from .models import Subscription, User
+from .models import (
+    Subscription,
+    User,
+)
 
 
 class UserViewSet(UserViewSet):
     """Переопределние вьюсета для пользователя."""
 
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (
+        IsAuthenticatedOrReadOnly,
+    )
     pagination_class = LimitOffsetPagination
 
-    @action(detail=False, permission_classes=(IsAuthenticated,))
+    @action(detail=False,
+            permission_classes=(IsAuthenticated,)
+            )
     def me(self, request):
         """Получение своих данных."""
 
@@ -34,7 +46,11 @@ class UserViewSet(UserViewSet):
 
         subscribers = User.objects.filter(email=request.user)
         page = self.paginate_queryset(subscribers)
-        serializer = SubscriptionsSerializer(page, many=True, context={'request': request})
+        serializer = SubscriptionsSerializer(
+            page,
+            many=True,
+            context={'request': request}
+        )
         return self.get_paginated_response(serializer.data)
 
     @action(methods=['post', 'delete'], detail=True)
@@ -45,9 +61,16 @@ class UserViewSet(UserViewSet):
         subscriber = get_object_or_404(User, pk=id)
         subscription = user.subscribe_author.filter(user=subscriber)
 
-        if request.method == 'POST' and user != subscriber and not subscription.exists():
+        if (
+                request.method == 'POST'
+                and user != subscriber
+                and not subscription.exists()
+        ):
             Subscription.objects.create(author=user, user=subscriber)
-            serializer = SubscriptionsSerializer(subscriber, context={'request': request})
+            serializer = SubscriptionsSerializer(
+                subscriber,
+                context={'request': request}
+            )
             return Response(serializer.data, status=HTTP_201_CREATED)
 
         if request.method == 'DELETE' and subscription:

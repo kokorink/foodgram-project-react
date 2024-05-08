@@ -40,8 +40,19 @@ class Command(BaseCommand):
         """Добавление тэгов."""
 
         if not Tag.objects.all().exists():
-            breakfast_tag = Tag(name='Завтрак', color='#000000', slug='breakfast')
-            brunch_tag = Tag(name='Бранч', color='#FF0000', slug='brunch')
-            lunch_tag = Tag(name='Обед', color='#00FF00', slug='lunch')
-            dinner_tag = Tag(name='Ужин', color='#0000FF', slug='dinner')
-            Tag.objects.bulk_create([breakfast_tag, brunch_tag, lunch_tag, dinner_tag])
+            breakfast_tag = Tag(name='Завтрак',
+                                color='#000000',
+                                slug='breakfast')
+            brunch_tag = Tag(name='Бранч',
+                             color='#FF0000',
+                             slug='brunch')
+            lunch_tag = Tag(name='Обед',
+                            color='#00FF00',
+                            slug='lunch')
+            dinner_tag = Tag(name='Ужин',
+                             color='#0000FF',
+                             slug='dinner')
+            Tag.objects.bulk_create([breakfast_tag,
+                                     brunch_tag,
+                                     lunch_tag,
+                                     dinner_tag])
