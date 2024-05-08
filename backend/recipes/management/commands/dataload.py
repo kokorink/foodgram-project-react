@@ -8,9 +8,14 @@ from recipes.models import Ingredient, Tag
 
 class Command(BaseCommand):
     """Класс команды."""
-    help = ('Команда для наполнения БД данными об ингридиентах и тэгах. При этом ингридиенты загружаются из фикстуры '
-            'data/ingredients.json, располагающейся в корне проекта. Формат принимаемых данных: '
-            '{"ingridients": [{"name": "data_name", "measurement_unit": "data_measurement_unit"}, ]}')
+    help = (
+        'Команда для наполнения БД данными об ингридиентах и тэгах. '
+        'При этом ингридиенты загружаются из фикстуры '
+        'data/ingredients.json, располагающейся в корне проекта. '
+        'Формат принимаемых данных: '
+        '{"ingridients": [{"name": "data_name", "measurement_unit": '
+        '"data_measurement_unit"}, ]}'
+    )
 
     def handle(self, *args, **options):
         """Вызов собственных методов класса."""
