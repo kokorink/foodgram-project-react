@@ -3,27 +3,23 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import mixins, permissions, status, viewsets
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from .filters import IngredientFilter
+from utils.filters import IngredientFilter
 from .models import Favorite, Ingredient, Recipe, RecipeIngridientList, ShoppingCart, Tag
-from .pagination import PageNumberPagination
-from .permissinos import IsAuthorOrReadOnly
-from .renders import ShoppingCartToTXTExport
+from utils.pagination import PageNumberPagination
+from utils.permissinos import IsAuthorOrReadOnly
+from utils.renders import ShoppingCartToTXTExport
 from .serializers import (IngredientSerializer, RecipeCreateSerializer, RecipeGetSerializer,
                           IngridientWithAmountSerializer, RecipeShortSerializer, TagSerializer)
 
 
-class ListRetrieveViewSet(mixins.ListModelMixin,
-                          mixins.RetrieveModelMixin,
-                          viewsets.GenericViewSet, ):
-    pass
-
-
-class IngredientViewSet(ListRetrieveViewSet):
+class IngredientViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     """Вьюсет для ингридиента."""
 
     queryset = Ingredient.objects.all()
@@ -34,7 +30,7 @@ class IngredientViewSet(ListRetrieveViewSet):
     pagination_class = None
 
 
-class TagViewSet(viewsets.ReadOnlyModelViewSet):
+class TagViewSet(ReadOnlyModelViewSet):
     """Вьюсет для тэга."""
 
     queryset = Tag.objects.all()
@@ -42,7 +38,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = None
 
 
-class RecipeViewSet(viewsets.ModelViewSet):
+class RecipeViewSet(ModelViewSet):
     """Вьюсет для рецепта."""
 
     permission_classes = (IsAuthorOrReadOnly,)
@@ -71,7 +67,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    @action(methods=['post', 'delete'], detail=True, permission_classes=(permissions.IsAuthenticated,))
+    @action(methods=['post', 'delete'], detail=True, permission_classes=(IsAuthenticated,))
     def favorite(self, request, pk):
         """Добавление/удаление рецепта в избранное."""
 
@@ -79,23 +75,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe = Recipe.objects.get(pk=pk)
         except ObjectDoesNotExist:
             if request.method == 'POST':
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            return Response(status=status.HTTP_404_NOT_FOUND)
+                return Response(status=HTTP_400_BAD_REQUEST)
+            return Response(status=HTTP_404_NOT_FOUND)
         user = request.user
         favorite_recipe = user.is_favorited.filter(recipe=recipe)
 
         if request.method == 'POST' and not favorite_recipe.exists():
             Favorite.objects.create(user=user, recipe=recipe)
             serializer = RecipeShortSerializer(recipe)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=HTTP_201_CREATED)
 
         if request.method == 'DELETE' and favorite_recipe.exists():
             favorite_recipe.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=HTTP_204_NO_CONTENT)
 
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=HTTP_400_BAD_REQUEST)
 
-    @action(methods=['post', 'delete'], detail=True, permission_classes=(permissions.IsAuthenticated,))
+    @action(methods=['post', 'delete'], detail=True, permission_classes=(IsAuthenticated,))
     def shopping_cart(self, request, pk):
         """Добавление/удаление ингридиентов рецепта в спиисок покупок."""
 
@@ -103,22 +99,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe = Recipe.objects.get(pk=pk)
         except ObjectDoesNotExist:
             if request.method == 'POST':
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            return Response(status=status.HTTP_404_NOT_FOUND)
+                return Response(status=HTTP_400_BAD_REQUEST)
+            return Response(status=HTTP_404_NOT_FOUND)
         user = request.user
         favorite_recipe = user.is_in_shopping_cart.filter(recipe=recipe)
 
         if request.method == 'POST' and not favorite_recipe.exists():
             ShoppingCart.objects.create(user=user, recipe=recipe)
             serializer = RecipeShortSerializer(recipe, context={'request': request})
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=HTTP_201_CREATED)
 
         if request.method == 'DELETE' and favorite_recipe.exists():
             favorite_recipe.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=HTTP_204_NO_CONTENT)
+        return Response(status=HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, permission_classes=(permissions.IsAuthenticated,),
+    @action(detail=False, permission_classes=(IsAuthenticated,),
             renderer_classes=(ShoppingCartToTXTExport,))
     def download_shopping_cart(self, request):
         """Скачивание списка покупок."""
@@ -130,7 +126,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             file_name = f'Shopping_list_{now:%Y-%m-%d_%H-%M-%S}.{request.accepted_renderer.format}'
             serializer = IngridientWithAmountSerializer(ingredient, many=True)
             return Response(serializer.data, headers={'Content-Disposition': f"attachment; filename='{file_name}'"})
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=HTTP_404_NOT_FOUND)
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):

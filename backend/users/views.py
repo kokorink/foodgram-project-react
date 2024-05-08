@@ -2,7 +2,9 @@
 
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from rest_framework import pagination, permissions, status
+from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -14,15 +16,15 @@ from .models import Subscription, User
 class UserViewSet(UserViewSet):
     """Переопределние вьюсета для пользователя."""
 
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    pagination_class = pagination.LimitOffsetPagination
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    pagination_class = LimitOffsetPagination
 
-    @action(detail=False, permission_classes=(permissions.IsAuthenticated,))
+    @action(detail=False, permission_classes=(IsAuthenticated,))
     def me(self, request):
         """Получение своих данных."""
 
         serializer = self.get_serializer(request.user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=HTTP_200_OK)
 
     @action(detail=False, )
     def subscriptions(self, request):
@@ -44,10 +46,10 @@ class UserViewSet(UserViewSet):
         if request.method == 'POST' and user != subscriber and not subscription.exists():
             Subscription.objects.create(author=user, user=subscriber)
             serializer = SubscriptionsSerializer(subscriber, context={'request': request})
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=HTTP_201_CREATED)
 
         if request.method == 'DELETE' and subscription:
             subscription.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=HTTP_204_NO_CONTENT)
 
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=HTTP_400_BAD_REQUEST)
