@@ -43,8 +43,7 @@ class UserViewSet(UserViewSet):
 
         if request.method == 'POST' and user != subscriber and not subscription.exists():
             Subscription.objects.create(author=user, user=subscriber)
-            serializer = SubscriptionsSerializer(subscriber,
-                                                 context={'request': request})
+            serializer = SubscriptionsSerializer(subscriber, context={'request': request})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == 'DELETE' and subscription:

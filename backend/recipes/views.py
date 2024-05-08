@@ -59,9 +59,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         is_in_shopping_cart = query_params.get('is_in_shopping_cart')
 
         if tags and is_favorited and user.is_authenticated:
-            return queryset.filter(
-                tags__slug__in=tags, favorited__user=user
-            ).distinct()
+            return queryset.filter(tags__slug__in=tags, favorited__user=user).distinct()
         if tags:
             return queryset.filter(tags__slug__in=tags).distinct()
         if is_in_shopping_cart and user.is_authenticated:
@@ -129,8 +127,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ingredient = RecipeIngridientList.objects.filter(recipe__shoppingcart__user=user)
         if ingredient:
             now = timezone.now()
-            file_name = (f'Products_{now:%Y-%m-%d_%H-%M-%S}.'
-                         f'{request.accepted_renderer.format}')
+            file_name = f'Shopping_list_{now:%Y-%m-%d_%H-%M-%S}.{request.accepted_renderer.format}'
             serializer = IngridientWithAmountSerializer(ingredient, many=True)
             return Response(serializer.data, headers={'Content-Disposition': f"attachment; filename='{file_name}'"})
         return Response(status=status.HTTP_404_NOT_FOUND)

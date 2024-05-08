@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 
+from foodgram_backend.constants import MAX_INGREDIENT_AMOUNT, MIN_INGREDIENT_AMOUNT, MIN_COOKING_TIME, MAX_COOKING_TIME
 from users.serializers import UserGetSerializer
 
 from .models import Ingredient, Recipe, RecipeIngridientList, Tag
@@ -60,18 +61,14 @@ class RecipeGetSerializer(serializers.ModelSerializer):
 
     tags = TagSerializer(read_only=True, many=True)
     author = UserGetSerializer(read_only=True, )
-    ingredients = IngridientWithAmountSerializer(read_only=True,
-                                                 many=True,
-                                                 source='ingredient_recipe')
+    ingredients = IngridientWithAmountSerializer(read_only=True, many=True, source='ingredient_recipe')
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
-        fields = (
-            'id', 'tags', 'author', 'ingredients', 'is_favorited',
-            'is_in_shopping_cart', 'name', 'image', 'text', 'cooking_time'
-        )
+        fields = ('id', 'tags', 'author', 'ingredients', 'is_favorited',
+                  'is_in_shopping_cart', 'name', 'image', 'text', 'cooking_time')
 
     def get_is_favorited(self, obj):
         """Проверка наличия в избранном."""
@@ -94,7 +91,7 @@ class IngredientWithAmountCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания ингридиента с привязкой колдичества."""
 
     id = serializers.IntegerField(source='ingredient.id')
-    amount = serializers.IntegerField(min_value=1, max_value=1000)
+    amount = serializers.IntegerField(min_value=MIN_INGREDIENT_AMOUNT, max_value=MAX_INGREDIENT_AMOUNT)
 
     class Meta:
         model = RecipeIngridientList
@@ -107,7 +104,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     ingredients = IngredientWithAmountCreateSerializer(many=True, source='ingredient_recipe', required=True)
     tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
     image = Base64ImageField()
-    cooking_time = serializers.IntegerField(min_value=1, max_value=120)
+    cooking_time = serializers.IntegerField(min_value=MIN_COOKING_TIME, max_value=MAX_COOKING_TIME)
 
     class Meta:
         model = Recipe
@@ -149,8 +146,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             ingredient_id = ingredient['ingredient']['id']
             ingredient_amount = ingredient['amount']
             current_ingredient = Ingredient.objects.get(id=ingredient_id)
-            ingrediens_amount.append(RecipeIngridientList(ingredient=current_ingredient,
-                                                          recipe=recipe,
+            ingrediens_amount.append(RecipeIngridientList(ingredient=current_ingredient, recipe=recipe,
                                                           amount=ingredient_amount))
         RecipeIngridientList.objects.bulk_create(ingrediens_amount)
 
