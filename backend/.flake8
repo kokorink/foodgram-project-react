@@ -1,0 +1,2 @@
+[flake8]
+exclude = foodgram_backend/settings.py

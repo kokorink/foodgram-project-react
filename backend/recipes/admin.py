@@ -1,12 +1,7 @@
 """Описание админ-зоны для моделей приложения recipes."""
 from django.contrib import admin
 
-from .models import (
-    Ingredient,
-    Recipe,
-    RecipeIngridientList,
-    Tag,
-)
+from .models import Ingredient, Recipe, RecipeIngridientList, Tag
 
 
 class RecipeAdmin(admin.ModelAdmin):

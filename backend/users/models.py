@@ -5,10 +5,8 @@ from django.core.validators import RegexValidator
 from django.db import models
 from rest_framework.exceptions import ValidationError
 
-from foodgram_backend.constants import (
-    USER_EMAIL_MAX_LENGTH,
-    USER_NAMES_PASSWORD_MAX_LENGTH
-)
+from foodgram_backend.constants import (USER_EMAIL_MAX_LENGTH,
+                                        USER_NAMES_PASSWORD_MAX_LENGTH)
 
 ADMIN = 'admin'
 USER = 'user'

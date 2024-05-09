@@ -6,20 +6,13 @@ from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 
-from foodgram_backend.constants import (
-    MAX_COOKING_TIME,
-    MAX_INGREDIENT_AMOUNT,
-    MIN_COOKING_TIME,
-    MIN_INGREDIENT_AMOUNT
-)
+from foodgram_backend.constants import (MAX_COOKING_TIME,
+                                        MAX_INGREDIENT_AMOUNT,
+                                        MIN_COOKING_TIME,
+                                        MIN_INGREDIENT_AMOUNT)
 from users.serializers import UserGetSerializer
 
-from .models import (
-    Ingredient,
-    Recipe,
-    RecipeIngridientList,
-    Tag
-)
+from .models import Ingredient, Recipe, RecipeIngridientList, Tag
 
 User = get_user_model()
 
