@@ -1,5 +1,3 @@
-"""Константы для полей моделей приложения."""
-
 USER_NAMES_PASSWORD_MAX_LENGTH = 150
 USER_EMAIL_MAX_LENGTH = 254
 TAG_NAME_SLUG_MAX_LENGTH = 200

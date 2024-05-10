@@ -1,5 +1,3 @@
-"""Серриализаторы для работы с пользователями."""
-
 from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
 

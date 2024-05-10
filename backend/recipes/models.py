@@ -1,5 +1,3 @@
-"""Описание моделей для рецепта"""
-
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -83,7 +81,7 @@ class Recipe(models.Model):
         User, on_delete=models.CASCADE,
         verbose_name='Автор',
         null=False,
-        related_name="recipes"
+        related_name='recipes'
     )
     name = models.CharField(
         'Рецепт',
@@ -142,12 +140,12 @@ class RecipeTag(models.Model):
     tag = models.ForeignKey(
         Tag,
         on_delete=models.CASCADE,
-        verbose_name="Тэг рецепта"
+        verbose_name='Тэг рецепта'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        verbose_name="Рецепт тэга"
+        verbose_name='Рецепт тэга'
     )
 
     class Meta:
@@ -168,8 +166,8 @@ class RecipeIngridientList(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        verbose_name="Ингридиент рецепта",
-        related_name="ingredient_in_recipes"
+        verbose_name='Ингридиент рецепта',
+        related_name='ingredient_in_recipes'
     )
     amount = models.IntegerField(
         'Количество',
@@ -179,7 +177,7 @@ class RecipeIngridientList(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        verbose_name="Рецепт"
+        verbose_name='Рецепт'
     )
 
     class Meta:

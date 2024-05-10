@@ -1,5 +1,3 @@
-"""Сериализаторы для работы с рецептами."""
-
 import base64
 
 from django.contrib.auth import get_user_model
@@ -11,7 +9,6 @@ from foodgram_backend.constants import (MAX_COOKING_TIME,
                                         MIN_COOKING_TIME,
                                         MIN_INGREDIENT_AMOUNT)
 from users.serializers import UserGetSerializer
-
 from .models import Ingredient, Recipe, RecipeIngridientList, Tag
 
 User = get_user_model()
@@ -199,14 +196,14 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
         if not value:
             raise serializers.ValidationError('Отсутствуют ингредиенты')
-        ingredient_list = set()
+        ingredients = set()
         for ingredient in value:
             ingredient_id = ingredient['ingredient']['id']
             if not Ingredient.objects.filter(id=ingredient_id).exists():
                 raise serializers.ValidationError('Ингридиент отсутствует')
-            if ingredient_id in ingredient_list:
+            if ingredient_id in ingredients:
                 raise serializers.ValidationError('Такой ингридиент уже есть')
-            ingredient_list.add(ingredient_id)
+            ingredients.add(ingredient_id)
         return value
 
     @staticmethod

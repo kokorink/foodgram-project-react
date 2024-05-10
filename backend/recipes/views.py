@@ -1,5 +1,3 @@
-"""Описание вьюлсетов для приложения рецептов."""
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
@@ -16,7 +14,6 @@ from utils.filters import IngredientFilter
 from utils.pagination import PageNumberPagination
 from utils.permissinos import IsAuthorOrReadOnly
 from utils.renders import ShoppingCartToTXTExport
-
 from .models import (Favorite, Ingredient, Recipe, RecipeIngridientList,
                      ShoppingCart, Tag)
 from .serializers import (IngredientSerializer, IngridientWithAmountSerializer,
