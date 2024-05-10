@@ -8,8 +8,8 @@ from foodgram_backend.constants import (MAX_COOKING_TIME,
                                         MAX_INGREDIENT_AMOUNT,
                                         MIN_COOKING_TIME,
                                         MIN_INGREDIENT_AMOUNT)
+from recipes.models import Ingredient, Recipe, RecipeIngridientList, Tag
 from users.serializers import UserGetSerializer
-from .models import Ingredient, Recipe, RecipeIngridientList, Tag
 
 User = get_user_model()
 

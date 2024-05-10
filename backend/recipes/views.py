@@ -10,15 +10,16 @@ from rest_framework.status import (HTTP_201_CREATED, HTTP_204_NO_CONTENT,
 from rest_framework.viewsets import (GenericViewSet, ModelViewSet,
                                      ReadOnlyModelViewSet)
 
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngridientList,
+                            ShoppingCart, Tag)
+from recipes.serializers import (IngredientSerializer,
+                                 IngridientWithAmountSerializer,
+                                 RecipeCreateSerializer, RecipeGetSerializer,
+                                 RecipeShortSerializer, TagSerializer)
 from utils.filters import IngredientFilter
 from utils.pagination import PageNumberPagination
 from utils.permissinos import IsAuthorOrReadOnly
 from utils.renders import ShoppingCartToTXTExport
-from .models import (Favorite, Ingredient, Recipe, RecipeIngridientList,
-                     ShoppingCart, Tag)
-from .serializers import (IngredientSerializer, IngridientWithAmountSerializer,
-                          RecipeCreateSerializer, RecipeGetSerializer,
-                          RecipeShortSerializer, TagSerializer)
 
 
 class IngredientViewSet(
@@ -175,7 +176,7 @@ class RecipeViewSet(ModelViewSet):
                 serializer.data,
                 headers={
                     'Content-Disposition':
-                    f"attachment; filename='{file_name}'"
+                        f"attachment; filename='{file_name}'"
                 }
             )
         return Response(status=HTTP_404_NOT_FOUND)
