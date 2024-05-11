@@ -1,4 +1,4 @@
-name: Main Taski workflow
+name: Main Foodgram workflow
 
 on:
   push:
@@ -97,7 +97,6 @@ jobs:
           context: ./frontend/
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
-
   build_gateway_and_push_to_docker_hub:
     name: Push gateway Docker image to DockerHub
     runs-on: ubuntu-latest
@@ -144,13 +143,12 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            cd dev/projects/goodgram
+            cd dev/projects/foodgram
             sudo docker compose -f docker-compose.production.yml pull
             sudo docker compose -f docker-compose.production.yml down
             sudo docker compose -f docker-compose.production.yml up -d
-            sudo docker compose -f docker-compose.production.yml exec backend python manage.py makemigrations
-            sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
+            sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/static/. /backend_static/static/
 
   send_message:
     runs-on: ubuntu-latest
