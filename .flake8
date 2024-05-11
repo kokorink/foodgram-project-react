@@ -1,3 +1,10 @@
 [flake8]
-exclude = settings.py,migrations
-src_paths=backend
+exclude =
+    */migrations/
+
+per-file-ignores =
+    */settings.py:E501,
+    */renders.py:R503
+
+src_paths =
+    backend
