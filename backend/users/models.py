@@ -1,14 +1,10 @@
-"""Описание модели пользователя сервиса."""
-
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 from rest_framework.exceptions import ValidationError
 
-from foodgram_backend.constants import (
-    USER_EMAIL_MAX_LENGTH,
-    USER_NAMES_PASSWORD_MAX_LENGTH
-)
+from foodgram_backend.constants import (USER_EMAIL_MAX_LENGTH,
+                                        USER_NAMES_PASSWORD_MAX_LENGTH)
 
 ADMIN = 'admin'
 USER = 'user'
@@ -33,7 +29,6 @@ class User(AbstractUser):
         verbose_name='Логин пользователя',
         max_length=USER_NAMES_PASSWORD_MAX_LENGTH,
         unique=True,
-        blank=False,
         null=False,
     )
     email = models.EmailField(
@@ -50,17 +45,13 @@ class User(AbstractUser):
     first_name = models.CharField(
         'Имя',
         max_length=USER_NAMES_PASSWORD_MAX_LENGTH,
-        blank=False,
-        null=False,
     )
     last_name = models.CharField(
         'Фамилия',
         max_length=USER_NAMES_PASSWORD_MAX_LENGTH,
-        blank=False,
     )
     password = models.CharField(
         'Пароль',
-        null=False,
         max_length=USER_NAMES_PASSWORD_MAX_LENGTH,
     )
     is_active = models.BooleanField(
@@ -98,13 +89,13 @@ class Subscription(models.Model):
     user = models.ForeignKey(
         User,
         related_name='subscriber',
-        verbose_name="Подписчик",
+        verbose_name='Подписчик',
         on_delete=models.CASCADE,
     )
     author = models.ForeignKey(
         User,
         related_name='subscribe_author',
-        verbose_name="Автор",
+        verbose_name='Автор',
         on_delete=models.CASCADE,
     )
 
@@ -112,7 +103,7 @@ class Subscription(models.Model):
         """Проверка на самоподписку."""
 
         if self.user == self.author:
-            raise ValidationError("Нельзя подписаться на самого себя")
+            raise ValidationError('Нельзя подписаться на самого себя')
 
     def save(self, *args, **kwargs):
         """Переопределение сохранения с учётом проверки."""

@@ -5,13 +5,16 @@ ignore=
     db.sqlite3,
     requirements.txt,
     manage.py,
-    apps.py
+    apps.py,
+    Dockerfile,
+    settings.py
 
 [MESSAGES CONTROL]
 disable=
     too-few-public-methods,
     no-member,
-    too-many-ancestors
+    too-many-ancestors,
+    missing-module-docstring
 
 [BASIC]
 indent-string = '    '

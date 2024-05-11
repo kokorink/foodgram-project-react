@@ -1,11 +1,6 @@
-"""Описание модели пользователя и подписок для админ-зоны."""
-
 from django.contrib import admin
 
-from .models import (
-    Subscription,
-    User,
-)
+from users.models import Subscription, User
 
 
 class UserAdmin(admin.ModelAdmin):

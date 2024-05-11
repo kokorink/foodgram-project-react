@@ -1,26 +1,15 @@
-"""Вьюсет для пользователей."""
-
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import (
-    IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
-)
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
-from rest_framework.status import (
-    HTTP_200_OK, HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT,
-    HTTP_400_BAD_REQUEST,
-)
+from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
+                                   HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST)
 
 from recipes.serializers import SubscriptionsSerializer
-
-from .models import (
-    Subscription,
-    User,
-)
+from users.models import Subscription, User
 
 
 class UserViewSet(UserViewSet):

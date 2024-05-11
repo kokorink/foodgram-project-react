@@ -1,4 +1,3 @@
-"""Команда для наполнения БД данными об ингридиентах и тэгах."""
 from django.core.management.base import BaseCommand
 from rest_framework.utils import json
 

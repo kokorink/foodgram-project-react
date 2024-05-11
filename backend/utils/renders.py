@@ -1,5 +1,3 @@
-"""Рендеринг данных."""
-
 import io
 
 from rest_framework import renderers
@@ -11,8 +9,8 @@ MEASUREMENT_UNIT_INDEX = 1
 class ShoppingCartToTXTExport(renderers.BaseRenderer):
     """Рендеринг списка покупок в текстовый формат."""
 
-    media_type = "text/plain"
-    format = "txt"
+    media_type = 'text/plain'
+    format = 'txt'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         if isinstance(data, list):
@@ -20,9 +18,9 @@ class ShoppingCartToTXTExport(renderers.BaseRenderer):
 
             shopping_cart = {}
             for ingredient in data:
-                name = ingredient["name"]
-                measurement_unit = ingredient["measurement_unit"]
-                amount = ingredient["amount"]
+                name = ingredient['name']
+                measurement_unit = ingredient['measurement_unit']
+                amount = ingredient['amount']
                 if name in shopping_cart:
                     shopping_cart[name][AMOUNT_INDEX] += amount
                 else:
