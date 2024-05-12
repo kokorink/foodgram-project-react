@@ -37,7 +37,6 @@ jobs:
         DB_PORT: 5432
       run: |
         python -m flake8 backend/
-#        python -m pylint backend/
 
   build_and_push_to_docker_hub:
       name: Push backend Docker image to DockerHub

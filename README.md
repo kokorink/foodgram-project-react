@@ -24,8 +24,6 @@
 ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
 ![Telegram](https://img.shields.io/badge/Telegram_BOT-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)
 
-![Flake8](https://img.shields.io/badge/flake8-passing-brightgreen)
-
 # Дипломный проект факультета бэкэнд-разработки 75 когорта
 <a href="https://foodgram.kokor.in/"> 
     <H2 align="center">Foodgram </H2>
@@ -41,17 +39,97 @@
 ### API
 #### Описание ресурсов, методов и ответов API доступно по адресу : <a href="https://foodgram.kokor.in/redoc">https://foodgram.kokor.in/redoc<a/>
 
-### 
-#### 
+### Развертывание проекта локально
+#### 1. Необходимо клонировать репозиторий
+```
+git clone git@github.com:kokorink/foodgram-project-react.git
+```
+#### 2. Создать и заполнить файл .env в корневой дирректории проекта
+#### Пример файла ```.env_exapmle```
 
-### 
-#### 
+Значение параметра ```DEBUG``` влияет на использование БД:
 
-### 
-#### 
+```True``` - SQLite3
 
-### 
-#### 
+```False``` - PostgreSQL
+
+#### 3.1 Запуск на встроенном сервере разработки Django
+```
+cd backend
+```
+Cоздать и активировать виртуальное окружение:
+
+```
+python3 -m venv env
+source env/bin/activate
+python3 -m pip install --upgrade pip
+```
+Установить зависимости из файла requirements.txt:
+```
+pip install -r requirements.txt
+```
+Выполнить миграции:
+```
+python3 manage.py makemigrations
+python3 manage.py migrate
+```
+Добавить в БД данные об ингридиентах и тэгах
+```
+python3 manage.py dataload
+```
+Запустить проект:
+```
+python3 manage.py runserver
+```
+
+### 3.2 Запуск проекта локально в Docker-контейнерах
+Создание образов, запуск контейнеров, создание и подключение томов
+```
+docker compose up
+```
+Выполнить миграции:
+```
+docker compose up exec backend python3 manage.py makemigrations
+docker compose up exec backend python3 manage.py migrate
+```
+Добавить в БД данные об ингридиентах и тэгах
+```
+docker compose up exec python3 manage.py dataload
+```
+Подключить статику для бэкэнда:
+```
+docker compose up exec backend python3 manage.py collectstatic
+docker compose up exec backend cp -r static/. ../backend_static/static/
+```
+### 3.3 Запуск проекта на удалённом сервере в продакшн
+#### Автоматизации доставки и развертывания приложения на удалённом сервере реализована с помощью GitHub Actions и DockerHub
+#### WorkFlow находится в папке ```.github/workflows/```
+
+Для развётрывания на удалённом сервере необходимо в папку ```/home/{user_name}/dev/projects/foodgram``` 
+скопировать файл ```.env```
+
+Для автоматической загрузки обновления образов иразвертывания на удалённом сервере необходимо 
+на GitHub добавить следующие секретные переменные репозитория: 
+```
+DOCKER_USERNAME - login учётной записи на Docker.com
+DOCKER_PASSWORD - пароль от учётной записи на Docker.com
+HOST - IP-адрес удалённого сервера
+USER - login учётной записи на удалённом сервере
+SSH_KEY - приватный ключ доступа по SSH на удалённый сервер
+SSH_PASSPHRASE - пароль от приватного ключа для доступа по SSH на удалённый сервер
+```
+Для информирования об удачном деплое на удалённом сервере обновления предуствотрено оповещени посредством Telegram.
+Для этого необходимо в secrets внести ещё 2 значения:
+```
+TELEGRAM_TO - ID получателя Telegram (можно узнать в боте @userinfobot)
+TELEGRAM_TOKEN - токен доступа Telegram (можно получить в боте @BotFather)
+```
+
+### Автор проекта: Константин Кокорин
+#### Студент 75 когорты курса Python-разработчик Яндекс.Практикум
+
+### Ревьювер: Александр Дурнев
 
 
-
+### © Copyright
+#### All rights reserved
