@@ -33,8 +33,11 @@ class UserViewSet(UserViewSet):
     def subscriptions(self, request):
         """Получение данных о подписках."""
 
-        subscribers = User.objects.filter(email=request.user)
-        page = self.paginate_queryset(subscribers)
+        authors = User.objects.filter(
+            id__in=(request.user.subscriber.all().values('author')
+                    )
+        )
+        page = self.paginate_queryset(authors)
         serializer = SubscriptionsSerializer(
             page,
             many=True,
@@ -46,8 +49,8 @@ class UserViewSet(UserViewSet):
     def subscribe(self, request, id):
         """Добавление и удаление подписки."""
 
-        user = request.user
-        subscriber = get_object_or_404(User, pk=id)
+        user = get_object_or_404(User, pk=id)
+        subscriber = request.user
         subscription = user.subscribe_author.filter(user=subscriber)
 
         if (
