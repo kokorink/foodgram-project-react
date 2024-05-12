@@ -47,7 +47,7 @@ git clone git@github.com:kokorink/foodgram-project-react.git
 #### 2. Создать и заполнить файл .env в корневой дирректории проекта
 #### Пример файла ```.env_exapmle```
 
-Значение параметра ```DEBUG``` влияет на использование БД:
+Значение параметра ```DEBUG``` влияет на использование БД
 
 ```True``` - SQLite3
 
@@ -57,18 +57,18 @@ git clone git@github.com:kokorink/foodgram-project-react.git
 ```
 cd backend
 ```
-Cоздать и активировать виртуальное окружение:
+Cоздать и активировать виртуальное окружение
 
 ```
 python3 -m venv env
 source env/bin/activate
 python3 -m pip install --upgrade pip
 ```
-Установить зависимости из файла requirements.txt:
+Установить зависимости из файла requirements.txt
 ```
 pip install -r requirements.txt
 ```
-Выполнить миграции:
+Выполнить миграции
 ```
 python3 manage.py makemigrations
 python3 manage.py migrate
@@ -77,7 +77,7 @@ python3 manage.py migrate
 ```
 python3 manage.py dataload
 ```
-Запустить проект:
+Запустить проект
 ```
 python3 manage.py runserver
 ```
@@ -87,7 +87,7 @@ python3 manage.py runserver
 ```
 docker compose up
 ```
-Выполнить миграции:
+Выполнить миграции
 ```
 docker compose up exec backend python3 manage.py makemigrations
 docker compose up exec backend python3 manage.py migrate
@@ -96,7 +96,7 @@ docker compose up exec backend python3 manage.py migrate
 ```
 docker compose up exec python3 manage.py dataload
 ```
-Подключить статику для бэкэнда:
+Подключить статику для бэкэнда
 ```
 docker compose up exec backend python3 manage.py collectstatic
 docker compose up exec backend cp -r static/. ../backend_static/static/
