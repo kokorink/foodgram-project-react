@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from foodgram_backend.constants import (INGREDIENT_NAME_UNIT_MAX_LENGTH,
@@ -7,7 +7,8 @@ from foodgram_backend.constants import (INGREDIENT_NAME_UNIT_MAX_LENGTH,
                                         MIN_INGREDIENT_AMOUNT,
                                         RECIPE_NAME_MAX_LENGTH,
                                         TAG_COLOR_MAX_LENGTH,
-                                        TAG_NAME_SLUG_MAX_LENGTH)
+                                        TAG_NAME_SLUG_MAX_LENGTH,
+                                        MAX_INGREDIENT_AMOUNT, MAX_COOKING_TIME)
 
 User = get_user_model()
 
@@ -19,19 +20,16 @@ class Tag(models.Model):
         'Тэг',
         max_length=TAG_NAME_SLUG_MAX_LENGTH,
         unique=True,
-        null=False
     )
     color = models.CharField(
         'Цвет',
         max_length=TAG_COLOR_MAX_LENGTH,
         unique=True,
-        null=False
     )
     slug = models.SlugField(
         'Слаг',
         max_length=TAG_NAME_SLUG_MAX_LENGTH,
         unique=True,
-        null=False
     )
 
     class Meta:
@@ -53,12 +51,10 @@ class Ingredient(models.Model):
     name = models.CharField(
         'Ингридиент',
         max_length=INGREDIENT_NAME_UNIT_MAX_LENGTH,
-        null=False
     )
     measurement_unit = models.TextField(
         'Единица измерения',
         max_length=INGREDIENT_NAME_UNIT_MAX_LENGTH,
-        null=False
     )
 
     class Meta:
@@ -80,8 +76,7 @@ class Recipe(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE,
         verbose_name='Автор',
-        null=False,
-        related_name='recipes'
+        related_name='recipes',
     )
     name = models.CharField(
         'Рецепт',
@@ -91,12 +86,10 @@ class Recipe(models.Model):
     image = models.ImageField(
         'Изображение',
         upload_to='images/',
-        null=False,
-        default=None
+        default=None,
     )
     text = models.TextField(
         'Описание',
-        null=False
     )
     ingredients = models.ManyToManyField(
         Ingredient,
@@ -109,12 +102,17 @@ class Recipe(models.Model):
         related_name='recipe',
         verbose_name='Тэги'
     )
-    cooking_time = models.IntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления в минутах',
         validators=[
             MinValueValidator(
                 MIN_COOKING_TIME,
-                message='Минимум 1 минута!')]
+                message='Минимум 1 минута!'),
+            MaxValueValidator(
+                MAX_COOKING_TIME,
+                message='Максимум 32000!'
+            )
+        ]
     )
     pub_date = models.DateTimeField(
         'Дата и время публикации',
@@ -169,10 +167,18 @@ class RecipeIngridientList(models.Model):
         verbose_name='Ингридиент рецепта',
         related_name='ingredient_in_recipes'
     )
-    amount = models.IntegerField(
+    amount = models.PositiveSmallIntegerField(
         'Количество',
-        validators=[MinValueValidator(MIN_INGREDIENT_AMOUNT,
-                                      message='Минимум 1!')]
+        validators=[
+            MinValueValidator(
+                MIN_INGREDIENT_AMOUNT,
+                message='Минимум 1!'
+            ),
+            MaxValueValidator(
+                MAX_INGREDIENT_AMOUNT,
+                message='Максимум 32000!'
+            )
+        ]
     )
     recipe = models.ForeignKey(
         Recipe,
