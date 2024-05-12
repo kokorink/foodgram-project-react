@@ -128,6 +128,7 @@ class Recipe(models.Model):
                 fields=('author', 'name', 'text'),
                 name='unique_recipe'),
         )
+        ordering = ("-pub_date",)
 
     def __str__(self):
         return str(self.name)
